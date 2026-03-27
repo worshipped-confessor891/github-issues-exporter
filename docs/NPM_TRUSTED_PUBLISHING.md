@@ -41,6 +41,10 @@
 3. 先在本地確認 CLI 行為：
 
    ```bash
+   github-issues-exporter --help
+   # 或
+   npx @willh/github-issues-exporter --help
+   # 或本地開發驗證
    bun run start -- --help
    ```
 

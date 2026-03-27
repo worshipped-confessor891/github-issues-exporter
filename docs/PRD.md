@@ -36,6 +36,8 @@
   - `--url`：URL 別名
   - `--github-id`：覆寫輸出資料夾 owner 名稱（預設：`gh api user -q .login`）
   - `--out-dir`：輸出根目錄（預設：目前目錄）
+    - 若未指定，輸出為 `/{out-dir}/{github-id}/{repo-name}/{issue-id}.json`
+    - 若有指定，輸出為 `/{out-dir}/{issue-id}.json`
   - `--state`：`open|closed|all`（repo 模式，預設 `all`）
   - `--page-size`：API 每頁筆數（預設 `100`）
   - `--max-pages`：repo issue 分頁上限（預設 0：不限制）
@@ -88,9 +90,11 @@
 
 ### 4.1 檔案佈局
 - 每個 issue 一個 JSON 檔：
-  - `/{out-dir}/{github-id}/{repo-name}/{issue-id}.json`
+  - 預設（未指定 `--out-dir`）：`/{out-dir}/{github-id}/{repo-name}/{issue-id}.json`
+  - 指定 `--out-dir` 後：`/{out-dir}/{issue-id}.json`
 - 該 issue 的附件目錄：
-  - `/{out-dir}/{github-id}/{repo-name}/{issue-id}/`
+  - 預設（未指定 `--out-dir`）：`/{out-dir}/{github-id}/{repo-name}/{issue-id}/`
+  - 指定 `--out-dir` 後：`/{out-dir}/{issue-id}/`
 
 ### 4.2 JSON 結構（目前）
 - 根物件欄位：

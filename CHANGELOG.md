@@ -61,9 +61,9 @@
 
 ### 發行與執行
 - 型別檢查：`bun run check`
-- 開發執行：`bun run src/index.ts ...`
+- 開發執行：`github-issues-exporter ...`（全域安裝）或 `npx @willh/github-issues-exporter ...`
 - 建置：`bun run build`（輸出 `dist/index.js`）
-- 建置後執行：`node dist/index.js ...`
+- 建置後執行：`github-issues-exporter --help`
 
 ### 退出碼
 - `0`：成功

@@ -242,7 +242,7 @@ bun run check
 bun run build
 
 # 用 dist 執行（建置完成後）
-node dist/index.js --help
+github-issues-exporter --help
 ```
 
 ### 版本 bump
