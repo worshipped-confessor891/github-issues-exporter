@@ -64,25 +64,25 @@ gh auth login
 ### 1. 以 repo Issues URL 匯出
 
 ```bash
-bun run src/index.ts https://github.com/doggy8088/GitHubClaw/issues
+github-issues-exporter https://github.com/doggy8088/GitHubClaw/issues
 ```
 
-或使用 npm 腳本：
+或使用 npx：
 
 ```bash
-bun run start -- https://github.com/doggy8088/GitHubClaw/issues
+npx @willh/github-issues-exporter https://github.com/doggy8088/GitHubClaw/issues
 ```
 
 ### 2. 以單一 issue URL 匯出
 
 ```bash
-bun run src/index.ts https://github.com/doggy8088/GitHubClaw/issues/123
+github-issues-exporter --url https://github.com/doggy8088/GitHubClaw/issues/123
 ```
 
 ### 3. 使用 `--url` 參數（與位置參數等價）
 
 ```bash
-bun run src/index.ts --url https://github.com/doggy8088/GitHubClaw/issues
+github-issues-exporter --url https://github.com/doggy8088/GitHubClaw/issues
 ```
 
 如果你有安裝為全域指令（`npm link`）可直接使用：
@@ -97,7 +97,7 @@ github-issues-exporter --url https://github.com/doggy8088/GitHubClaw/issues
 ## CLI 用法（Usage）
 
 ```text
-usage: bun run src/index.ts [--url URL] [--github-id GITHUB_ID]
+usage: github-issues-exporter [--url URL] [--github-id GITHUB_ID]
                                      [--out-dir OUT_DIR] [--state {open,closed,all}]
                                      [--page-size PAGE_SIZE] [--max-pages MAX_PAGES]
                                      [--max-comment-pages MAX_COMMENT_PAGES]
@@ -127,7 +127,13 @@ optional arguments:
   --force             Overwrite existing issue JSON.
   --dry-run           Validate URL and gh auth only; no files written.
   --verbose           Print detailed progress.
-  -v, --version      Show CLI version.
+-v, --version      Show CLI version.
+```
+
+也可直接透過 npx 使用：
+
+```text
+npx @willh/github-issues-exporter --url https://github.com/doggy8088/GitHubClaw/issues
 ```
 
 ---
@@ -180,7 +186,7 @@ optional arguments:
 ## 範例（含 `out-dir`）
 
 ```bash
-bun run src/index.ts \
+github-issues-exporter \
   https://github.com/doggy8088/GitHubClaw/issues \
   --out-dir ./exports \
   --state all \

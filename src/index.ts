@@ -76,10 +76,18 @@ interface AttachmentRecord {
   error?: string;
 }
 
+export function detectUsageCommand(): string {
+  const argv1 = process.argv[1] || "";
+  const normalized = argv1.split(path.sep).join("/");
+  const isNpx = normalized.includes("/_npx/") || (process.env.npm_execpath || "").includes("npx");
+  return isNpx ? "npx @willh/github-issues-exporter" : "github-issues-exporter";
+}
+
 export function usage(): string {
+  const cmd = detectUsageCommand();
   return `
 使用方式:
-  bun run src/index.ts [--url URL] [options] [url]
+  ${cmd} [--url URL] [options] [url]
 
 位置參數:
   url
