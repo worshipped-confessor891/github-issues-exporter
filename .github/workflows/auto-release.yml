@@ -41,7 +41,8 @@ jobs:
       - name: Compute next patch version
         id: version
         run: |
-          NEXT_VERSION="$(node <<'NODE'
+          TMP_SCRIPT="$(mktemp)"
+          cat > "$TMP_SCRIPT" <<'NODE'
           const fs = require("node:fs");
           const {execSync} = require("node:child_process");
 
@@ -86,7 +87,8 @@ jobs:
           fs.writeFileSync("package.json", `${JSON.stringify(pkg, null, 2)}\n`);
           process.stdout.write(nextVersion);
           NODE
-          )
+          NEXT_VERSION="$(node "$TMP_SCRIPT")"
+          rm -f "$TMP_SCRIPT"
           echo "VERSION=${NEXT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Commit version and tag
