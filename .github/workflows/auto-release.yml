@@ -24,6 +24,9 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Update npm to latest
+        run: npm install -g npm@latest
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
