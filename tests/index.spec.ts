@@ -64,6 +64,16 @@ describe("CLI argument parser", () => {
     const args = parseArgs(["bun", "src/index.ts", "--help"]);
     expect(args.help).toBe(true);
   });
+
+  test("--version 會直接回傳 version flag", () => {
+    const args = parseArgs(["bun", "src/index.ts", "--version"]);
+    expect(args.version).toBe(true);
+  });
+
+  test("-v 會直接回傳 version flag", () => {
+    const args = parseArgs(["bun", "src/index.ts", "-v"]);
+    expect(args.version).toBe(true);
+  });
 });
 
 describe("URL parser", () => {

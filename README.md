@@ -127,6 +127,7 @@ optional arguments:
   --force             Overwrite existing issue JSON.
   --dry-run           Validate URL and gh auth only; no files written.
   --verbose           Print detailed progress.
+  -v, --version      Show CLI version.
 ```
 
 ---

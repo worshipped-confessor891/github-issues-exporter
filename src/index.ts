@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {execFileSync} from "node:child_process";
 import crypto from "node:crypto";
-import {URL} from "node:url";
+import {fileURLToPath, URL} from "node:url";
 import http from "node:http";
 import https from "node:https";
 
@@ -44,6 +44,7 @@ export interface CliArgs {
   githubId: string;
   outDir: string;
   outDirExplicit: boolean;
+  version: boolean;
   state: "open" | "closed" | "all";
   pageSize: number;
   maxPages: number;
@@ -96,6 +97,7 @@ export function usage(): string {
   --skip-comments              不匯出 comments
   --force                      覆寫已存在的 issue 檔
   --dry-run                    只做參數與 gh 驗證，不寫檔
+  -v, --version               顯示版本資訊
   --verbose                    顯示詳細流程
   --help                       顯示本說明
 
@@ -113,6 +115,7 @@ export function parseArgs(argv: string[]): CliArgs {
     githubId: "",
     outDir: ".",
     outDirExplicit: false,
+    version: false,
     state: "all",
     pageSize: 100,
     maxPages: 0,
@@ -129,6 +132,10 @@ export function parseArgs(argv: string[]): CliArgs {
     const arg = argv[i];
     if (arg === "--help" || arg === "-h") {
       args.help = true;
+      return args;
+    }
+    if (arg === "--version" || arg === "-v") {
+      args.version = true;
       return args;
     }
     if (arg === "--url") {
@@ -450,6 +457,25 @@ export function replaceAttachmentUrls(text: string | null | undefined, urlMap: R
   return output;
 }
 
+function getPackageVersion(): string {
+  const candidates = [
+    path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "package.json"),
+    path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "package.json"),
+    path.join(process.cwd(), "package.json"),
+  ];
+  for (const candidate of candidates) {
+    try {
+      if (!fs.existsSync(candidate)) continue;
+      const raw = fs.readFileSync(candidate, "utf8");
+      const parsed = JSON.parse(raw) as {version?: string};
+      if (typeof parsed.version === "string" && parsed.version) return parsed.version;
+    } catch {
+      continue;
+    }
+  }
+  return "unknown";
+}
+
 async function processIssue(params: {
   issue: GhIssue;
   owner: string;
@@ -587,6 +613,10 @@ export async function run(argv: string[]): Promise<number> {
 
   if (args.help) {
     console.log(usage());
+    return EXIT_CODE.OK;
+  }
+  if (args.version) {
+    console.log(`github-issues-exporter v${getPackageVersion()}`);
     return EXIT_CODE.OK;
   }
 
